@@ -15,17 +15,17 @@ module.exports = merge(common, {
     devServer: {
         historyApiFallback: true,
         hot: true,
-        disableHostCheck: true,
+        // disableHostCheck: true,
         compress: true,
         // host: "106.75.216.89",
         port: "9000",
         headers: {
             "Access-Control-Allow-Origin": "*"
         },
-        watchContentBase: false,
+        // watchContentBase: false,
         liveReload: false,
-        transportMode: "ws",
-        injectClient: false,
+        // transportMode: "ws",
+        // injectClient: false,
         proxy: {
             "/oauth": {
                 target: protocol + "://" + baiduApiHost,
@@ -110,5 +110,6 @@ module.exports = merge(common, {
             }
         }
     },
-    plugins: [new webpack.HotModuleReplacementPlugin(), new webpack.NamedModulesPlugin()]
+    // new webpack.NamedModulesPlugin()
+    plugins: [new webpack.HotModuleReplacementPlugin()]
 });

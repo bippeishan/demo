@@ -38,10 +38,8 @@
         "target": "es5",
         "traceResolution": false,
         "baseUrl": ".",
-        "paths": {
-            "react-components": ["./node_modules/@ucloud-fe/react-components"]
-        }
+        "paths": {}
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules", "code_generator", "**/*.test.ts", "build", "dist"]
+    "exclude": ["node_modules", "build", "dist"]
 }

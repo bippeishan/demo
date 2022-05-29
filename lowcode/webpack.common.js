@@ -2,8 +2,8 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 const yargs = require("yargs");
+const MometaEditorPlugin = require('@mometa/editor/webpack')
 
 const devMode = process.env.NODE_ENV !== "production";
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
@@ -35,13 +35,48 @@ const commonConfig = {
         rules: [
             {
                 test: /\.(js|ts|tsx)?$/,
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
                 include: [path.resolve(__dirname, "src")],
-                use: "happypack/loader?id=happyBabel"
+                loader: require.resolve('babel-loader'),
+                options: {
+                    customize: require.resolve('babel-preset-react-app/webpack-overrides'),
+                    presets: [
+                        [
+                            require.resolve('babel-preset-react-app'),
+                            {
+                                runtime: devMode ? 'automatic' : 'classic'
+                            }
+                        ]
+                    ],
+
+                    plugins: [
+                        [require.resolve('babel-plugin-import'), { libraryName: 'antd', style: 'css' }],
+                        devMode && require.resolve('@mometa/editor/babel/plugin-react')]
+                }
             },
             {
+                test: /\.(js|mjs)$/,
+                exclude: /@babel(?:\/|\\{1,2})runtime/,
+                loader: require.resolve('babel-loader'),
+                options: {
+                  babelrc: false,
+                  configFile: false,
+                  compact: false,
+                  presets: ["@babel/preset-react", [require.resolve('babel-preset-react-app/dependencies'), { helpers: true }]],
+                  cacheDirectory: true,
+                  // See #6846 for context on why cacheCompression is disabled
+                  cacheCompression: false,
+  
+                  // Babel sourcemaps are needed for debugging into node_modules
+                  // code.  Without the options below, debuggers like VSCode
+                  // show incorrect code and set breakpoints on the wrong lines.
+                  sourceMaps: false,
+                  inputSourceMap: false
+                }
+              },
+            {
                 test: /\.css$/,
-                include: [path.resolve(__dirname, "src")],
+                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "node_modules/antd/lib")],
                 use: [
                     {
                         loader: devMode ? "style-loader" : MiniCssExtractPlugin.loader
@@ -184,29 +219,6 @@ const commonConfig = {
     },
 
     plugins: [
-        new HappyPack({
-            id: "happyBabel",
-            loaders: [
-                {
-                    loader: "cache-loader"
-                },
-                {
-                    loader: "babel-loader",
-                    options: {
-                        cacheDirectory: true,
-                        cacheCompression: false
-                    }
-                },
-                {
-                    loader: "ts-loader",
-                    options: {
-                        happyPackMode: true
-                    }
-                }
-            ],
-            threadPool: happyThreadPool,
-            verbose: true
-        }),
         new webpack.DefinePlugin({
             CONSOLE_VERSION: JSON.stringify(CONSOLE_VERSION)
         }),
@@ -225,14 +237,21 @@ const commonConfig = {
 
         // IgnorePlugin忽略所有locale，ContextReplacementPlugin可选择支持几种locale
         // new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ja|it/),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
+        devMode &&
+        new MometaEditorPlugin({
+            react: true,
+            // 开启物料预览
+            experimentalMaterialsClientRender: true
+        })
 
         // new BundleAnalyzerPlugin({
         //     analyzerHost: "127.0.0.1",
         //     analyzerPort: "9001"
         // })
     ],
-    stats: "minimal"
+    // stats: "minimal"
 };
 
 module.exports = {

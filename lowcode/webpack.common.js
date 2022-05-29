@@ -8,7 +8,6 @@ const yargs = require("yargs");
 const devMode = process.env.NODE_ENV !== "production";
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const webpack = require("webpack");
-const recursiveIssuer = require("./src/plugins/utils").recursiveIssuer;
 
 const HappyPack = require("happypack");
 const os = require("os");
@@ -20,22 +19,8 @@ const happyThreadPool = HappyPack.ThreadPool({
 const argv = yargs.argv;
 const CONSOLE_VERSION = argv.CONSOLE_VERSION === "undefined" || !argv.CONSOLE_VERSION ? "2.1" : argv.CONSOLE_VERSION;
 
-const styleEntry = {};
-
-const styleCacheGroups = {};
-Object.keys(styleEntry).forEach((entryKey) => {
-    const groupName = entryKey + "Group";
-    styleCacheGroups[entryKey] = {
-        name: groupName,
-        test: (m, c, entry = groupName) => m.constructor.name === "CssModule" && recursiveIssuer(m, c) === entry,
-        chunks: "all",
-        enforce: true
-    };
-});
-
 const commonConfig = {
     entry: {
-        ...styleEntry,
         app: "./src/index.tsx"
     },
 
@@ -113,7 +98,6 @@ const commonConfig = {
             },
             {
                 test: /\.(woff|woff2|ttf|eot|svg)(\?\d+)?$/,
-                include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "node_modules/monaco-editor")],
                 use: [
                     {
                         loader: "url-loader",
@@ -137,8 +121,6 @@ const commonConfig = {
 
     resolve: {
         alias: {
-            "react-components": "@ucloud-fe/react-components",
-            "@": path.resolve(__dirname, "src/styles/images"),
             moment: path.resolve(process.cwd(), "node_modules", "moment")
         },
         modules: ["src", "node_modules"],
@@ -162,15 +144,6 @@ const commonConfig = {
                     filename: "bundle/[name].[contenthash:6].js",
                     priority: 11,
                     enforce: true
-                },
-                ucloud_react: {
-                    test: /[\\/]node_modules[\\/]@ucloud-fe\/react-components(.*)\.jsx?/,
-                    chunks: "initial",
-                    name: "ucloud_react",
-                    filename: "bundle/[name].[contenthash:6].js",
-                    priority: 10,
-                    enforce: true,
-                    reuseExistingChunk: true
                 },
                 form: {
                     test: /[\\/]node_modules[\\/](classnames)[\\/]/,
@@ -206,7 +179,6 @@ const commonConfig = {
                     name: "async_commons",
                     priority: 3
                 },
-                ...styleCacheGroups
             }
         }
     },
@@ -238,17 +210,10 @@ const commonConfig = {
         new webpack.DefinePlugin({
             CONSOLE_VERSION: JSON.stringify(CONSOLE_VERSION)
         }),
-        new CopyPlugin([
-            {
-                from: path.resolve(__dirname, "src/config/config.json"),
-                to: "bundle/"
-            }
-        ]),
 
         new HtmlWebpackPlugin({
             inject: "body",
             template: path.resolve(__dirname, "src/index.html"),
-            favicon: path.resolve(__dirname, "src/favicon.ico"),
             hash: true,
             scriptLoading: "defer"
         }),
@@ -272,5 +237,4 @@ const commonConfig = {
 
 module.exports = {
     commonConfig: commonConfig,
-    styleEntry: styleEntry
 };

@@ -8,7 +8,7 @@
     "license": "ISC",
     "private": true,
     "scripts": {
-        "start": "cross-env NODE_ENV=development webpack-dev-server --host 0.0.0.0 --config webpack.dev.js --progress --profile --colors --watch-poll",
+        "start": "cross-env NODE_ENV=development webpack-dev-server --config webpack.dev.js --progress --profile --colors --watch-poll",
         "prettier": "npx prettier --write ./src"
     },
     "devDependencies": {

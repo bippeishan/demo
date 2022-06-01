@@ -1,0 +1,20 @@
+{
+    "name": "webpack-test",
+    "version": "0.0.1",
+    "description": "webpack-test",
+    "repository": "",
+    "author": "emma.bi",
+    "license": "ISC",
+    "private": true,
+    "scripts": {
+        "build": "rm -rf build && cross-env NODE_ENV=production webpack --config webpack.config.js"
+    },
+    "devDependencies": {
+        "@babel/core": "7.18.2",
+        "babel-loader": "8.2.5",
+        "cross-env": "7.0.2",
+        "webpack": "5.72.1",
+        "webpack-cli": "4.9.2"
+    },
+    "dependencies": {}
+}

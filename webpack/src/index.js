@@ -1,10 +1,10 @@
-const testA = (a, b) => {
-    let result = a + b;
-    console.log('testA:', result)
-    return result;
-}
+// const testA = (a, b) => {
+//     let result = a + b;
+//     console.log('testA:', result)
+//     return result;
+// }
 
-testA(1,2)
+// testA(1,2)
 // export {testA}
 
 // ---------
@@ -21,3 +21,7 @@ testA(1,2)
 //   }
 
 //   document.body.appendChild(component());
+
+// ---------
+
+import './styles/pages/index.scss';

@@ -1,0 +1,13 @@
+// @import '../themes/light.scss';
+
+.home-css {
+  &-text {
+    color: $text-color;
+  }
+  &-desc {
+    color: $desc-color;
+  }
+  &-background {
+    color: $background-color;
+  }
+}

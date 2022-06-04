@@ -1,5 +1,8 @@
 // @ts-nocheck
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const ThemesPlugin = require('./plugins/theme-plugin');
 
 module.exports = {
     entry: {
@@ -13,8 +16,8 @@ module.exports = {
         chunkFilename: "module/[name].[contenthash:6].js" // 针对非chunk文件的命名
     },
 
-    // mode: "production",
-    mode: "development",
+    mode: "production",
+    // mode: "development",
     // devtool: 'source-map', // 会生产map文件，记录bundle文件对应的源文件及内容
     optimization: {
         concatenateModules: true,
@@ -29,13 +32,45 @@ module.exports = {
                     path.resolve(__dirname, "src"),
                 ],
                 loader: require.resolve('babel-loader'),
-            }
+            },
+            {
+                test: /\.scss$/,
+                exclude: /node_modules/,
+                include: [path.resolve(__dirname, "src")],
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            importLoaders: 1
+                        }
+                    },
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            additionalData: `@import "./src/styles/themes/light.scss";`,
+                            sassOptions: {
+                                outputStyle: "compressed"
+                            }
+                        }
+                    }
+                ]
+            },
         ]
     },
 
     resolve: {
-        extensions: [".js"]
+        extensions: [".js", ".scss"]
     },
 
-    plugins: [],
+    plugins: [
+        new ThemesPlugin(),
+
+        // new MiniCssExtractPlugin({
+        //     filename: "[name].[hash:6].css",
+        //     chunkFilename: "[id].[hash:6].css"
+        // }),
+    ],
 };
